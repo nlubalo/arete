@@ -60,6 +60,7 @@ Use architect subagents in parallel to diagram these two ADR sections.
 - `architect` returns a Mermaid diagram or `NO_DIAGRAM`.
 
 ## Configuration and Limitations
+
 [Current Codex releases](https://learn.chatgpt.com/docs/agent-configuration/subagents) enable subagents by default and discover custom TOML agents in `~/.codex/agents/` or `.codex/agents/`. If your configuration disables them, set `enabled = true` in the existing `[agents]` section of your Codex `config.toml`.
 
 - **Phase invocation**: Claude Code's `Skill(...)` calls are platform-specific. Invoke each phase skill explicitly in Codex.
