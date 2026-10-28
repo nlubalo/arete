@@ -71,7 +71,7 @@ Three agents run quietly in parallel without blocking the main brainstorm:
 
 ```bash
 # Claude Code
-/plugin marketplace add nlubalo/arete
+/plugin marketplace add jesgarram/arete
 /plugin install arete@arete-marketplace
 ```
 

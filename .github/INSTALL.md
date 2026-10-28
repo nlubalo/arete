@@ -6,7 +6,7 @@ Install Arete skills and agents for GitHub Copilot.
 
 ```bash
 # Clone the repository
-git clone https://github.com/nlubalo/arete.git ~/.copilot/arete
+git clone https://github.com/jesgarram/arete.git ~/.copilot/arete
 
 # Symlink skills
 ln -s ~/.copilot/arete/skills ~/.copilot/skills

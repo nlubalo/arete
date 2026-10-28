@@ -5,7 +5,7 @@ Install Arete skills and custom subagents for a current Codex release.
 ## Quick Install
 
 ```bash
-git clone https://github.com/nlubalo/arete.git ~/.codex/arete
+git clone https://github.com/jesgarram/arete.git ~/.codex/arete
 
 # Install skills without replacing your existing skills directory
 mkdir -p ~/.agents/skills
