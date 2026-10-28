@@ -30,4 +30,4 @@ If automation fails, you can manually create a release:
 git tag -a vX.Y.Z -m "Release vX.Y.Z"
 git push origin vX.Y.Z
 ```
-Then create the release at https://github.com/jesgarram/arete/releases/new
+Then create the release at https://github.com/nlubalo/arete/releases/new

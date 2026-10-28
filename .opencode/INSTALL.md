@@ -6,7 +6,7 @@ Install Arete skills and agents for OpenCode.
 
 ```bash
 # Clone the repository
-git clone https://github.com/jesgarram/arete.git ~/.config/opencode/arete
+git clone https://github.com/nlubalo/arete.git ~/.config/opencode/arete
 
 # Symlink skills (Agent Skills spec)
 ln -s ~/.config/opencode/arete/skills ~/.config/opencode/skills
