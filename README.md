@@ -72,7 +72,7 @@ Three agents run quietly in parallel without blocking the main brainstorm:
 ```bash
 # Claude Code
 /plugin marketplace add jesgarram/arete
-/plugin install arete@jesgarram/arete
+/plugin install arete@arete-marketplace
 ```
 
 Then:
@@ -83,7 +83,7 @@ Then:
 
 Follow the questions. Don't fight them.
 
-For OpenCode, Copilot, or Codex, see the per-platform install files in [`.opencode/`](.opencode/INSTALL.md), [`.github/`](.github/INSTALL.md), and [`.codex/`](.codex/INSTALL.md). Codex doesn't support subagents, so you get skills only.
+For OpenCode, Copilot, or Codex, see the per-platform install files in [`.opencode/`](.opencode/INSTALL.md), [`.github/`](.github/INSTALL.md), and [`.codex/`](.codex/INSTALL.md). All three support skills and generated subagents.
 
 ## When to skip it
 

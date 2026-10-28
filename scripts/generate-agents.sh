@@ -3,11 +3,12 @@
 # Generate platform-specific agent files from canonical agents/
 #
 # Usage:
-#   ./scripts/generate-agents.sh --platform <opencode|copilot> --output <dir>
+#   ./scripts/generate-agents.sh --platform <opencode|copilot|codex> --output <dir>
 #
 # Examples:
 #   ./scripts/generate-agents.sh --platform opencode --output ~/.config/opencode/agents
 #   ./scripts/generate-agents.sh --platform copilot --output ~/.copilot/agents
+#   ./scripts/generate-agents.sh --platform codex --output ~/.codex/agents
 #
 # Reads from: agents/*.md (Claude Code format)
 # Generates platform-specific agents based on --platform flag
@@ -20,20 +21,18 @@ AGENTS_DIR="$ROOT_DIR/agents"
 
 usage() {
     cat << EOF
-Usage: $(basename "$0") --platform <opencode|copilot> --output <dir>
+Usage: $(basename "$0") --platform <opencode|copilot|codex> --output <dir>
 
 Generate platform-specific agent files from canonical agents/
 
 Options:
-  --platform <platform>   Target platform: opencode or copilot
+  --platform <platform>   Target platform: opencode, copilot, or codex
   --output <dir>          Output directory for generated agents
 
 Examples:
   $(basename "$0") --platform opencode --output ~/.config/opencode/agents
   $(basename "$0") --platform copilot --output ~/.copilot/agents
-
-Note: Codex uses AGENTS.md for project guidance and does not support
-separate agent files. Only skills are compatible with Codex.
+  $(basename "$0") --platform codex --output ~/.codex/agents
 EOF
     exit 1
 }
@@ -45,10 +44,12 @@ OUTPUT_DIR=""
 while [[ $# -gt 0 ]]; do
     case $1 in
         --platform)
+            [[ $# -ge 2 ]] || usage
             PLATFORM="$2"
             shift 2
             ;;
         --output)
+            [[ $# -ge 2 ]] || usage
             OUTPUT_DIR="$2"
             shift 2
             ;;
@@ -69,8 +70,8 @@ if [[ -z "$PLATFORM" ]] || [[ -z "$OUTPUT_DIR" ]]; then
     usage
 fi
 
-if [[ "$PLATFORM" != "opencode" ]] && [[ "$PLATFORM" != "copilot" ]]; then
-    echo "Error: platform must be 'opencode' or 'copilot'"
+if [[ "$PLATFORM" != "opencode" ]] && [[ "$PLATFORM" != "copilot" ]] && [[ "$PLATFORM" != "codex" ]]; then
+    echo "Error: platform must be 'opencode', 'copilot', or 'codex'"
     echo ""
     usage
 fi
@@ -95,6 +96,8 @@ for agent_file in "$AGENTS_DIR"/*.md; do
     in_frontmatter=false
     frontmatter_done=false
     description=""
+    codex_model=""
+    codex_reasoning_effort=""
     body=""
 
     while IFS= read -r line || [[ -n "$line" ]]; do
@@ -113,6 +116,10 @@ for agent_file in "$AGENTS_DIR"/*.md; do
             # Extract description from frontmatter
             if [[ "$line" =~ ^description:\ *(.*) ]]; then
                 description="${BASH_REMATCH[1]}"
+            elif [[ "$line" =~ ^codex_model:\ *(.*) ]]; then
+                codex_model="${BASH_REMATCH[1]}"
+            elif [[ "$line" =~ ^codex_reasoning_effort:\ *(.*) ]]; then
+                codex_reasoning_effort="${BASH_REMATCH[1]}"
             fi
         elif [[ "$frontmatter_done" == true ]]; then
             body+="$line"$'\n'
@@ -142,6 +149,35 @@ description: $description
 $body
 EOF
         echo "  -> $OUTPUT_DIR/${name}.agent.md"
+    elif [[ "$PLATFORM" == "codex" ]]; then
+        # Embed the teaching reference so installed agents are self-contained.
+        if [[ "$name" == "teacher" ]]; then
+            body="${body//\[\`reference\/teaching-template.md\`\]\(reference\/teaching-template.md\)/the Teaching Template included below}"
+            body+=$'\n'
+            body+="$(cat "$AGENTS_DIR/references/teaching-template.md")"
+        fi
+
+        # TOML basic strings need backslashes and quotes escaped, including
+        # triple quotes in future agent instructions. Preserve actual newlines.
+        toml_description="${description//\\/\\\\}"
+        toml_description="${toml_description//\"/\\\"}"
+        toml_body="${body//\\/\\\\}"
+        toml_body="${toml_body//\"/\\\"}"
+        toml_model="${codex_model//\\/\\\\}"
+        toml_model="${toml_model//\"/\\\"}"
+        toml_effort="${codex_reasoning_effort//\\/\\\\}"
+        toml_effort="${toml_effort//\"/\\\"}"
+        {
+            printf 'name = "%s"\ndescription = "%s"\n' "$name" "$toml_description"
+            if [[ -n "$codex_model" ]]; then
+                printf 'model = "%s"\n' "$toml_model"
+            fi
+            if [[ -n "$codex_reasoning_effort" ]]; then
+                printf 'model_reasoning_effort = "%s"\n' "$toml_effort"
+            fi
+            printf 'developer_instructions = """\n%s"""\n' "$toml_body"
+        } > "$OUTPUT_DIR/${name}.toml"
+        echo "  -> $OUTPUT_DIR/${name}.toml"
     fi
 
 done

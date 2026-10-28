@@ -109,6 +109,8 @@ When IaC detected, use patterns from `references/tdd-iac.md`:
 
 Spawn architect subagent for sections with component interactions.
 
+On Codex, use the installed custom agent named `architect` through Codex's native subagent tools. Delegate independent sections in parallel and collect their results before saving the documents. If the custom agent is unavailable, generate the diagrams in the main session.
+
 **Trigger keywords**: service, database, API, cache, queue, client, calls, sends, flows
 
 **Process**: Identify sections → spawn parallel subagents (section title + text) → inject returned mermaid or discard `NO_DIAGRAM`
