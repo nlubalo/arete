@@ -2,6 +2,8 @@
 name: researcher
 description: Research repository or web based on provided context and instructions
 model: haiku
+codex_model: gpt-6-luna
+codex_reasoning_effort: high
 ---
 
 # Researcher

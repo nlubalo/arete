@@ -2,6 +2,8 @@
 name: teacher
 description: Explain concepts with diagrams, write to context/teachings/
 model: sonnet
+codex_model: gpt-6.1-sol
+codex_reasoning_effort: medium
 ---
 
 # Teacher

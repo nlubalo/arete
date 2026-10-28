@@ -34,7 +34,14 @@ class GenerateAgentsTests(unittest.TestCase):
                         agent = tomllib.loads(generated)
                         self.assertEqual(set(agent), {
                             "name", "description", "developer_instructions",
+                            "model", "model_reasoning_effort",
                         })
+                        expected_model, expected_effort = (
+                            ("gpt-6-luna", "high") if source.stem == "researcher"
+                            else ("gpt-6.1-sol", "medium")
+                        )
+                        self.assertEqual(agent["model"], expected_model)
+                        self.assertEqual(agent["model_reasoning_effort"], expected_effort)
                         self.assertEqual(agent["name"], source.stem)
                         if source.stem == "teacher":
                             template = (ROOT / "agents/references/teaching-template.md").read_text()
@@ -66,6 +73,8 @@ class GenerateAgentsTests(unittest.TestCase):
             agent = tomllib.loads((root / "output/fixture.toml").read_text())
             self.assertEqual(agent["description"], description)
             self.assertEqual(agent["developer_instructions"], body)
+            self.assertNotIn("model", agent)
+            self.assertNotIn("model_reasoning_effort", agent)
 
     def test_invalid_arguments(self):
         for args in (["--platform"], ["--output"], ["--platform", "invalid", "--output", "unused"]):

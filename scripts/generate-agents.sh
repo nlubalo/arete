@@ -96,6 +96,8 @@ for agent_file in "$AGENTS_DIR"/*.md; do
     in_frontmatter=false
     frontmatter_done=false
     description=""
+    codex_model=""
+    codex_reasoning_effort=""
     body=""
 
     while IFS= read -r line || [[ -n "$line" ]]; do
@@ -114,6 +116,10 @@ for agent_file in "$AGENTS_DIR"/*.md; do
             # Extract description from frontmatter
             if [[ "$line" =~ ^description:\ *(.*) ]]; then
                 description="${BASH_REMATCH[1]}"
+            elif [[ "$line" =~ ^codex_model:\ *(.*) ]]; then
+                codex_model="${BASH_REMATCH[1]}"
+            elif [[ "$line" =~ ^codex_reasoning_effort:\ *(.*) ]]; then
+                codex_reasoning_effort="${BASH_REMATCH[1]}"
             fi
         elif [[ "$frontmatter_done" == true ]]; then
             body+="$line"$'\n'
@@ -157,8 +163,20 @@ EOF
         toml_description="${toml_description//\"/\\\"}"
         toml_body="${body//\\/\\\\}"
         toml_body="${toml_body//\"/\\\"}"
-        printf 'name = "%s"\ndescription = "%s"\ndeveloper_instructions = """\n%s"""\n' \
-            "$name" "$toml_description" "$toml_body" > "$OUTPUT_DIR/${name}.toml"
+        toml_model="${codex_model//\\/\\\\}"
+        toml_model="${toml_model//\"/\\\"}"
+        toml_effort="${codex_reasoning_effort//\\/\\\\}"
+        toml_effort="${toml_effort//\"/\\\"}"
+        {
+            printf 'name = "%s"\ndescription = "%s"\n' "$name" "$toml_description"
+            if [[ -n "$codex_model" ]]; then
+                printf 'model = "%s"\n' "$toml_model"
+            fi
+            if [[ -n "$codex_reasoning_effort" ]]; then
+                printf 'model_reasoning_effort = "%s"\n' "$toml_effort"
+            fi
+            printf 'developer_instructions = """\n%s"""\n' "$toml_body"
+        } > "$OUTPUT_DIR/${name}.toml"
         echo "  -> $OUTPUT_DIR/${name}.toml"
     fi
 

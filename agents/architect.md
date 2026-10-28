@@ -2,6 +2,8 @@
 name: architect
 description: Generate architecture diagram from ADR section
 model: sonnet
+codex_model: gpt-6.1-sol
+codex_reasoning_effort: medium
 ---
 
 # Architect

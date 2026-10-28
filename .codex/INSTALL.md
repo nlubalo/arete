@@ -64,7 +64,7 @@ Use architect subagents in parallel to diagram these two ADR sections.
 [Current Codex releases](https://learn.chatgpt.com/docs/agent-configuration/subagents) enable subagents by default and discover custom TOML agents in `~/.codex/agents/` or `.codex/agents/`. If your configuration disables them, set `enabled = true` in the existing `[agents]` section of your Codex `config.toml`.
 
 - **Phase invocation**: Claude Code's `Skill(...)` calls are platform-specific. Invoke each phase skill explicitly in Codex.
-- **Model routing**: generated agents inherit your Codex model and reasoning settings. Claude's `haiku` and `sonnet` values are omitted. Customize the generated TOML files if you want different models.
+- **Model routing**: Researcher uses `gpt-6-luna` with `high` reasoning; Architect and Teacher use `gpt-6.1-sol` with `medium` reasoning. These Codex counterparts preserve the lighter Researcher and more capable Architect/Teacher roles, following the [Codex subagent guidance](https://learn.chatgpt.com/docs/agent-configuration/subagents). Your account must have access to the selected models. Edit `codex_model` and `codex_reasoning_effort` in `agents/*.md`, then regenerate to customize them. Claude's `model` settings remain separate. Agents without Codex overrides inherit the parent session's settings.
 - **Permissions and tools**: subagents inherit the parent session's permissions and available tools. Web research requires available search tools. Tool names in canonical instructions (Glob, Grep, Read, WebSearch, WebFetch) refer to the equivalent Codex capabilities.
 - **Parallel work**: agents share the project filesystem. Assign separate output files and collect results before using them. Delegation consumes additional tokens.
 
